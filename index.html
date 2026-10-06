@@ -163,10 +163,11 @@
                     <h2 id="contact-title" class="section-title">Let's start<br><span>a conversation.</span></h2>
                     <p class="contact-description">For internship opportunities or a conversation about my work, get in touch.</p>
                 </div>
-                <form id="contact-form" action="/api/contact" method="post" class="contact-form" data-state="idle" aria-describedby="contact-availability" novalidate>
+                <form id="contact-form" action="https://api.web3forms.com/submit" method="post" class="contact-form" data-state="idle" aria-describedby="contact-availability" novalidate>
+                    <input type="hidden" id="contact-access-key" name="access_key" value="">
                     <div class="sr-only" aria-hidden="true" inert>
                         <label for="contact-website">Leave this field empty</label>
-                        <input id="contact-website" name="website" autocomplete="off" tabindex="-1">
+                        <input id="contact-website" name="botcheck" autocomplete="off" tabindex="-1">
                     </div>
                     <div class="contact-fields">
                         <div class="form-field">

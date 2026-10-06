@@ -1,4 +1,4 @@
-/* Same-origin Contact client. All delivery credentials stay in api/contact.js. */
+/* Web3Forms browser submission. The public access key is injected at build time. */
 (() => {
     'use strict';
     const form = document.getElementById('contact-form');
@@ -6,9 +6,8 @@
     const submit = document.getElementById('contact-submit');
     const status = document.getElementById('contact-status');
     const fields = ['name', 'email', 'message'].map(name => form.elements.namedItem(name));
-    const endpoint = '/api/contact';
+    const endpoint = 'https://api.web3forms.com/submit';
     const EMAIL = /^(?!\.)(?![^@]*\.\.)[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]*[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
-    let requestId = '';
     let sending = false;
     function setState(state, message = '') {
         form.dataset.state = state;
@@ -28,7 +27,6 @@
     fields.forEach(field => {
         field.addEventListener('blur', () => { if (field.value || field.hasAttribute('aria-invalid')) validate(field); });
         field.addEventListener('input', () => {
-            if (!sending) requestId = '';
             if (field.hasAttribute('aria-invalid')) validate(field);
             if (!sending && ['success', 'error', 'invalid'].includes(form.dataset.state)) setState('idle');
         });
@@ -53,24 +51,25 @@
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 15000);
         try {
-            // Keep the key for an unchanged retry after a lost response; Resend
-            // deduplicates it server-side. Editing any field starts a new request.
-            requestId ||= crypto.randomUUID();
+            const accessKey = form.elements.namedItem('access_key').value.trim();
+            const botcheck = Boolean(form.elements.namedItem('botcheck').value);
+            if (!accessKey || botcheck) throw new Error('Submission is unavailable');
             const payload = {
+                access_key: accessKey,
                 name: fields[0].value.trim(), email: fields[1].value.trim(),
-                message: fields[2].value.trim(), website: form.elements.namedItem('website').value,
-                requestId
+                message: fields[2].value.trim(),
+                subject: `New Portfolio Contact — ${fields[0].value.trim()}`,
+                botcheck
             };
             const response = await fetch(endpoint, {
                 method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload), signal: controller.signal,
-                credentials: 'same-origin'
+                credentials: 'omit'
             });
             const result = await response.json();
             // Only an affirmative response is success. Never simulate delivery.
-            if (!response.ok || result.ok !== true) throw new Error('Submission was not accepted');
+            if (!response.ok || result.success !== true) throw new Error('Submission was not accepted');
             form.reset();
-            requestId = '';
             setState('success', "Message sent successfully. I'll get back to you soon.");
         } catch {
             setState('error', 'Something went wrong while sending your message. Please try again or contact me directly by email.');

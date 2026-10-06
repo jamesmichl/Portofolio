@@ -1,6 +1,6 @@
 # James Michael Lionel — portfolio
 
-A dependency-free HTML/CSS/JavaScript portfolio with a Vercel Node.js Contact function. Static previews work with any web server; real email delivery requires the backend and two server-only environment variables. See [DEPLOYMENT.md](DEPLOYMENT.md) for current setup and verification. Keep file paths case-sensitive when deploying.
+A dependency-free HTML/CSS/JavaScript portfolio with browser-side Web3Forms Contact delivery. The Vercel build injects the public form key from `WEB3FORMS_ACCESS_KEY`; no custom email backend is required. See [DEPLOYMENT.md](DEPLOYMENT.md) for current setup and verification. Keep file paths case-sensitive when deploying.
 
 ## Files
 
@@ -12,10 +12,9 @@ A dependency-free HTML/CSS/JavaScript portfolio with a Vercel Node.js Contact fu
 - `script.js`: shared mobile navigation, active section tracking, header sizing and accessible Portfolio tabs. It also handles navigation on dedicated project pages.
 - `hero-motion.js`: the timed interest phrase, reduced-motion handling and offscreen animation pause. Lanyard keyframes live in `style.css`.
 - `atmosphere.js`: layout-aware stars and occasional shooting stars. No particle library.
-- `contact.js`: contact validation, submission states, and same-origin `/api/contact` transport.
-- `api/contact.js`: server validation, lightweight abuse protection and Resend delivery.
-- `vercel.json`, `package.json`, `scripts/`, `tests/`: deployment, static build, syntax checks and mocked backend tests.
-- `DEPLOYMENT.md`, `.env.example`: exact owner setup and blank server environment-variable template.
+- `contact.js`: existing validation and submission states, using the official Web3Forms endpoint directly from the browser.
+- `vercel.json`, `package.json`, `scripts/`, `tests/`: deployment, static build/key injection, syntax checks and mocked form/build tests.
+- `DEPLOYMENT.md`, `.env.example`: exact owner setup and blank build-time Web3Forms variable template.
 - `assets/certificates/`: seven unchanged original PDFs, full-size WebP renders and smaller card thumbnails.
 - `assets/projects/`: six supplied visuals, copied without altering their pixels. `foto-james.png` remains the Hero portrait. The unused legacy `Logos.jpeg` was removed during production cleanup.
 
@@ -165,9 +164,9 @@ Lightweight inline SVG icons use a shared 20px size, stroke and accent color; no
 
 ### Contact delivery setup (required before live delivery)
 
-The current implementation uses **Vercel Functions + Resend**, replacing the former unconfigured Formspree adapter. See [DEPLOYMENT.md](DEPLOYMENT.md) for all steps, protection limits and testing instructions. Required server-only variables are `RESEND_API_KEY` and `CONTACT_FROM_EMAIL`; the sender must belong to a verified domain you control. The recipient is fixed as **james.lionel@binus.ac.id**, with the visitor's address as Reply-To. No secrets belong in browser scripts.
+The current implementation uses **Web3Forms browser submission**, replacing the previous email backend. Set only `WEB3FORMS_ACCESS_KEY` in Vercel's project environment variables and redeploy. The build injects it into a hidden input in `dist/index.html`; the source stays blank. The deployed key is public by Web3Forms design, but no real value belongs in source control. The recipient is the email associated with your Web3Forms form, and the visitor's `email` supplies Reply-To. See [DEPLOYMENT.md](DEPLOYMENT.md) for exact setup, local development and Git commands.
 
-The form supports idle, validation error, sending, success and submission error. It prevents duplicate submissions, keeps input after failure, and clears only after provider acceptance. Missing configuration produces an honest error. No real email has been delivered or inbox-verified during this implementation.
+The existing idle, validation, sending, success and error behavior remains intact. In-flight duplicate submissions are blocked; failed input is preserved; fields clear only after Web3Forms confirms acceptance. The subject is `New Portfolio Contact — [visitor name]`. No real inbox delivery has been verified here.
 
 ## Portfolio categories and Hero motion
 
@@ -193,7 +192,7 @@ Before publication, manually verify on your own Safari/iOS and Android devices a
 
 ## Historical completion notes
 
-The following records describe earlier revisions. Their Formspree/unavailable-form statements are superseded by the Vercel + Resend implementation and DEPLOYMENT.md above.
+The following records describe earlier revisions. Their older email-provider/unavailable-form statements are historical and superseded by the Web3Forms setup and DEPLOYMENT.md above.
 
 ## Completion check — 5 October 2026
 
@@ -271,11 +270,11 @@ Cleanup verification: all seven JavaScript files passed `node --check`; all 37 u
 
 Only the explicit homepage divider and Contact functionality changed. `.hero-bottom` keeps its 1px border, with alpha reduced from 0.12 to 0.04 (67%). The current source has no additional horizontal borders between major sections; backgrounds and component borders were preserved rather than introducing new dividers. No spacing, section dimensions, responsive rules or animations changed.
 
-Contact now uses `/api/contact` and server-only Resend delivery, replacing the inactive Formspree configuration. The existing form design is preserved; its availability notice is replaced by neutral guidance and Send Message is enabled when JavaScript loads. An offscreen, non-focusable honeypot does not affect layout. See DEPLOYMENT.md for exact setup and remaining activation steps.
+This earlier pass introduced a server-side Contact implementation, since replaced by the Web3Forms integration described above. The existing form design is preserved; its availability notice is replaced by neutral guidance and Send Message is enabled when JavaScript loads. An offscreen, non-focusable honeypot does not affect layout. See DEPLOYMENT.md for exact setup and remaining activation steps.
 
 Validation: syntax checks, ten mocked backend tests, static build, browser form-state tests and local HTTP client/function integration passed. Provider failures and missing credentials preserve input. No real email was sent. At 1440, 1024, 768, 430 and 390px, measured section/card/form/social geometry matched the saved approved version, with no horizontal overflow or page errors. All six project visuals/detail pages and seven certificates/PDF viewers loaded from the built output; social URLs remain identical. Project/certificate image and PDF bytes are unchanged. Checks also passed under the configured Node.js 22 runtime. Tooling emitted environment-supplied npm `http-proxy` and experimental `EnvHttpProxyAgent` warnings, unrelated to project code; no lint tool is configured.
 
 Modified: `style.css`, `index.html`, `contact.js`, `content.js`, `README.md`.
 Created: `api/contact.js`, `package.json`, `vercel.json`, `.env.example`, `.gitignore`, `.vercelignore`, `scripts/build.cjs`, `scripts/check.cjs`, `tests/contact.test.cjs`, `DEPLOYMENT.md`.
 
-Pending: configure the actual `RESEND_API_KEY` and verified-domain `CONTACT_FROM_EMAIL` in Vercel, redeploy, and verify a real message in **james.lionel@binus.ac.id**. Implementation tests do not establish inbox delivery. A deployed Vercel build and physical-device testing were not performed in this workspace.
+Current delivery setup: configure `WEB3FORMS_ACCESS_KEY` in Vercel, redeploy, and verify a real message in the inbox associated with that Web3Forms form. Implementation tests do not establish inbox delivery. A deployed Vercel build and physical-device testing were not performed in this workspace.
