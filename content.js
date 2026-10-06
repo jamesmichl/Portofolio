@@ -2,7 +2,7 @@
  * Empty optional values are intentionally omitted from the public UI.
  * Use verified facts only. See README.md for every supported field. */
 window.portfolioContent = {
-    resumeUrl: '', // Set to 'assets/James-Michael-Lionel-CV.pdf' AFTER adding the PDF.
+    resumeUrl: 'assets/James-Michael-Lionel-CV.pdf',
     skills: [
         { title: 'Programming & markup', symbol: '</>', items: ['Python', 'JavaScript', 'HTML', 'CSS'] },
         { title: 'Frameworks & libraries', symbol: '{ }', items: ['React', 'scikit-learn', 'OpenCV'] },
