@@ -1,0 +1,8 @@
+.env
+.env.*
+.vercel/
+node_modules/
+dist/
+tests/
+README.md
+DEPLOYMENT.md
