@@ -69,6 +69,38 @@
         if (record.dates) article.append(el('p', 'record-dates', record.dates));
         byId('education-list').append(article);
     });
+    // The static build verifies this optional local PDF; no missing-file request
+    // or link is emitted when it is absent. This does not affect the CV action.
+    const transcriptUrl = data.transcriptAvailable ? safeUrl(data.transcriptUrl) : '';
+    if (transcriptUrl && byId('education')) {
+        const row = el('a', 'education-transcript');
+        row.href = transcriptUrl;
+        row.target = '_blank';
+        row.rel = 'noopener noreferrer';
+        row.setAttribute('aria-label', 'View Academic Transcript PDF (opens in a new tab)');
+        const label = el('span', 'transcript-label');
+        const ns = 'http://www.w3.org/2000/svg';
+        const icon = document.createElementNS(ns, 'svg');
+        icon.setAttribute('viewBox', '0 0 24 24');
+        icon.setAttribute('fill', 'none');
+        icon.setAttribute('stroke', 'currentColor');
+        icon.setAttribute('stroke-width', '1.5');
+        icon.setAttribute('stroke-linecap', 'round');
+        icon.setAttribute('stroke-linejoin', 'round');
+        icon.setAttribute('aria-hidden', 'true');
+        icon.setAttribute('focusable', 'false');
+        const outline = document.createElementNS(ns, 'path');
+        outline.setAttribute('d', 'M14 3H6v18h12V7l-4-4Zm0 0v5h4M9 12h6m-6 4h6');
+        icon.append(outline);
+        label.append(icon, el('span', '', 'Academic Transcript'));
+        const action = el('span', 'transcript-action', 'View Transcript ');
+        const arrow = el('span', '', '↗');
+        arrow.setAttribute('aria-hidden', 'true');
+        action.append(arrow);
+        row.append(label, action);
+        byId('education').classList.add('has-transcript');
+        byId('education-list').append(row);
+    }
     (data.skills || []).forEach(group => {
         const article = el('div', 'skill-group');
         article.dataset.starProtect = '';

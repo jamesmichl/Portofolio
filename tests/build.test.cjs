@@ -41,3 +41,26 @@ test('unconfigured visual build stays blank and existing static build settings a
     assert.equal(config.buildCommand, 'npm run build'); assert.equal(config.outputDirectory, 'dist'); assert.equal(config.framework, null); assert.equal(config.functions, undefined);
     assert.equal(fs.existsSync(path.join(source, 'api/contact.js')), false);
 });
+
+test('transcript is omitted when absent, non-PDF, or outside assets; existing PDF enables it without altering source', () => {
+    const f = fixture();
+    const config = path.join(f.root, 'content.js');
+    const original = fs.readFileSync(config, 'utf8');
+    const pdf = 'James-Michael-Lionel-Transcript.pdf';
+    const asset = path.join(f.root, 'assets', pdf);
+    const available = () => /transcriptAvailable = true;/.test(fs.readFileSync(path.join(f.root, 'dist/content.js'), 'utf8'));
+    try {
+        f.build(); assert.equal(available(), false);
+        fs.writeFileSync(asset, '<html>Not a PDF</html>'); f.build(); assert.equal(available(), false);
+        // Reuse an existing non-transcript PDF solely in this temporary test.
+        const fixturePdf = path.join(source, 'assets/certificates/databases-foundations.pdf');
+        fs.copyFileSync(fixturePdf, asset); f.build(); assert.equal(available(), true);
+        assert.deepEqual(fs.readFileSync(path.join(f.root, 'dist/assets', pdf)), fs.readFileSync(fixturePdf));
+        assert.equal(fs.readFileSync(config, 'utf8'), original);
+        for (const value of ['', 'https://example.com/transcript.pdf', 'assets/../outside.pdf']) {
+            fs.writeFileSync(config, original + `\nwindow.portfolioContent.transcriptUrl = ${JSON.stringify(value)};\n`);
+            fs.copyFileSync(fixturePdf, path.join(f.root, 'outside.pdf')); f.build(); assert.equal(available(), false);
+        }
+        fs.writeFileSync(config, original); fs.unlinkSync(asset); f.build(); assert.equal(available(), false);
+    } finally { f.cleanup(); }
+});

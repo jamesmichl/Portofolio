@@ -224,6 +224,18 @@ button { border: 0; cursor: pointer; }
 .education-detail { margin-top: 20px; font-size: 13px; }
 .education-detail dt { color: var(--muted); font-size: 11px; margin-bottom: 3px; }
 .education-detail dd { color: #d3deeb; }
+/* Optional transcript: reclaim 44px of internal whitespace for a 44px link,
+   preserving the Education card's existing outer dimensions. */
+.education-panel.has-transcript { padding-block: 20px; }
+.education-panel.has-transcript .panel-label { margin-bottom: 10px; }
+.education-panel.has-transcript .education-detail { margin-top: 8px; }
+.education-transcript { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; border-top: 1px solid rgba(148, 163, 184, .12); color: var(--muted); text-decoration: none; font-size: 11px; line-height: 1.5; }
+.transcript-label { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.transcript-label svg { width: 16px; height: 16px; flex: 0 0 16px; }
+.transcript-action { flex-shrink: 0; color: #b7c9da; transition: color 160ms ease; }
+.transcript-action > span { margin-left: 3px; color: var(--accent); }
+.education-transcript:hover, .education-transcript:focus-visible, .education-transcript:hover .transcript-action, .education-transcript:focus-visible .transcript-action { color: var(--accent); }
+.education-transcript:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 3px; }
 .record-dates { color: var(--muted); font-size: 12px; margin-top: 8px; }
 .focus-panel { padding: 20px 30px; border-radius: 14px; background: #0e1829; }
 .focus-panel .small-label { margin-bottom: 12px; font-size: 10px; }
@@ -398,6 +410,9 @@ body.modal-open { overflow: hidden; }
     .panel-label { margin-bottom: 18px; }
     .education-school { font-size: 26px; }
     .education-detail { margin-top: 16px; }
+    .education-panel.has-transcript { padding-block: 16px; }
+    .education-panel.has-transcript .panel-label { margin-bottom: 2px; }
+    .education-panel.has-transcript .education-detail { margin-top: 4px; }
     .focus-panel { padding: 18px 24px; }
     .focus-panel .small-label { margin-bottom: 9px; }
     .focus-row { font-size: 13px; padding-block: 4px; }
